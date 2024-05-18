@@ -29,7 +29,7 @@ normalizador = MinMaxScaler()
 crop_normalizador = normalizador.fit(dados_atributos) # o método fit()gera o modelo para normalização
 ## Salvar o modelo normalizador para uso posterior
 from pickle import dump
-dump(crop_normalizador, open('C:/Users/yann_/OneDrive/Documentos/GitHub/AV1bim-Sistemas_Inteligentes/crop_normalizador.pwl', 'wb'))
+dump(crop_normalizador, open('C:/Users/yann_/OneDrive/Documentos/GitHub/AV1bim-Sistemas_Inteligentes/classificador/crop_normalizador.pwl', 'wb'))
 
 ####################################################################################################################################
 # 1.3 - Normalizar a base de dados para treinamento
@@ -112,7 +112,7 @@ print(score_cross_val.mean(), ' - ', score_cross_val.std())
 crop_tree = tree.fit(dados_atributos_b, dados_classes_b)
 
 # Salvar o modelo para uso posterior
-dump(crop_tree, open('C:/Users/yann_/OneDrive/Documentos/GitHub/AV1bim-Sistemas_Inteligentes/crop_tree_model_cross.pwl', 'wb'))
+dump(crop_tree, open('C:/Users/yann_/OneDrive/Documentos/GitHub/AV1bim-Sistemas_Inteligentes/classificador/crop_tree_model_cross.pwl', 'wb'))
 
 ####################################################################################################################################
 # Acurácia global do modelo
@@ -138,4 +138,4 @@ ConfusionMatrixDisplay.from_estimator(crop_tree_cross, dados_atributos_b, dados_
 plt.xticks(rotation=90, ha='right')
 plt.show()
 
-dump(crop_tree_cross, open('crop_tree_cross.pkl', 'wb'))
+dump(crop_tree_cross, open('C:/Users/yann_/OneDrive/Documentos/GitHub/AV1bim-Sistemas_Inteligentes/classificador/crop_tree_cross.pkl', 'wb'))
