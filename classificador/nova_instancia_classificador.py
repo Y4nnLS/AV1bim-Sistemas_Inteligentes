@@ -3,12 +3,12 @@ nova_instancia = [[37,64,22,17.48189735,18.8251973,5.954665349,121.9401369]]
 # Normalizar a nova instância
 # Abrir o modelo normalizador salvo antes do treinamento
 from pickle import load
-normalizador = load(open('C:/Users/yann_/OneDrive/Documentos/GitHub/AV1bim-Sistemas_Inteligentes/classificador/crop_normalizador.pwl', 'rb'))
+normalizador = load(open('C:/Users/Usuário/Documents/GitHub/AV1bim-Sistemas_Inteligentes/classificador/crop_normalizador.pwl', 'rb'))
 nova_instancia_normalizada = normalizador.transform(nova_instancia)
 
 # Classificar a nova instância
 # Abrir o modelo classificador salvo anteriormente
-crop_classificador = load(open('C:/Users/yann_/OneDrive/Documentos/GitHub/AV1bim-Sistemas_Inteligentes/classificador/crop_tree_model_cross.pwl', 'rb'))
+crop_classificador = load(open('C:/Users/Usuário/Documents/GitHub/AV1bim-Sistemas_Inteligentes/classificador/crop_tree_model_cross.pwl', 'rb'))
 
 # Classificar
 resultado = crop_classificador.predict(nova_instancia_normalizada)
