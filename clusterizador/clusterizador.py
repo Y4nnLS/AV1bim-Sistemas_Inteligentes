@@ -73,7 +73,7 @@ for i in range(len(distortions)):
 n_clusters_otimo = K[distancias.index(np.max(distancias))]
 
 # Treinar o modelo KMeans com o número ótimo de clusters
-crop_kmeans_model = KMeans(n_clusters=n_clusters_otimo, random_state=42, n_init='auto').fit(dados_normalizados_final_legiveis)
+crop_kmeans_model = KMeans(n_clusters=n_clusters_otimo, n_init='auto').fit(dados_normalizados_final_legiveis)
 
 # Salvar o modelo treinado em um arquivo pickle
 dump(crop_kmeans_model, open("clusterizador/crop_cluster.pkl", "wb"))

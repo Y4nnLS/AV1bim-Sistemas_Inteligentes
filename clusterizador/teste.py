@@ -3,8 +3,8 @@ from pickle import load
 from sklearn.cluster import KMeans
 
 # Carregar modelos e normalizador previamente treinados
-crop_kmeans_model = load(open("clusterizador/crop_cluster.pkl", "rb"))
 normalizador = load(open("clusterizador/normalizador.pkl", "rb"))
+crop_kmeans_model = load(open("clusterizador/crop_cluster.pkl", "rb"))
 
 # Listas de teste
 test_instances = [
@@ -27,23 +27,18 @@ dados_numericos_normalizados = normalizador.transform(df_teste)
 grupos_preditos = crop_kmeans_model.predict(dados_numericos_normalizados)
 
 # Mostrar resultados
-print(grupos_preditos)
+print("Grupos preditos para as novas instâncias:")
+print(type(grupos_preditos))
 for i, grupo_predito in enumerate(grupos_preditos):
-    print(i)
-    print(grupo_predito)
     centroide = crop_kmeans_model.cluster_centers_[grupo_predito]
     print(f"Índice do grupo da nova instância {i+1}: {grupo_predito}")
     print(f"Centroide da nova instância {i+1}: {centroide}")
+
 
 # Desnormalizar as novas instâncias para legibilidade, se necessário
 dados_normalizados_final_legiveis = normalizador.inverse_transform(dados_numericos_normalizados)
 dados_normalizados_final_legiveis_df = pd.DataFrame(data=dados_normalizados_final_legiveis, columns=['Nitrogen', 'Phosphorus', 'Potassium', 'Temperature', 'Humidity', 'pH_Value', 'Rainfall'])
 
 # Exibir o DataFrame final com os dados legíveis
-print("Dados das novas instâncias (desnormalizados):")
+print("\nDados das novas instâncias (desnormalizados):")
 print(dados_normalizados_final_legiveis_df.to_string(index=False))
-
-df_dados_normalizados = pd.DataFrame(data=dados_numericos_normalizados, columns=['Nitrogen', 'Phosphorus', 'Potassium', 'Temperature', 'Humidity', 'pH_Value', 'Rainfall'])
-
-print("Dados normalizados das novas instâncias:")
-print(df_dados_normalizados.to_string(index=False))
