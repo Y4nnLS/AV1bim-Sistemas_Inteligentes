@@ -6,8 +6,9 @@ from sklearn.cluster import KMeans
 crop_kmeans_model = load(open("clusterizador/crop_cluster.pkl", "rb"))
 normalizador = load(open("clusterizador/normalizador.pkl", "rb"))
 
-# Listas de teste
-nova_instancia = [[90, 42, 43, 20.87974371, 82.00274423, 6.502985292, 202.9355362]]
+# testes
+nova_instancia = [[79,47,39,23.689332,82.272822,6.425471,236.181114]] # Rice
+# nova_instancia = [[101,28,29,25.540477,58.869846,6.790308,158.066295]] # Coffe
 
 # Normalizar as novas instâncias usando o mesmo normalizador
 nova_instancia_normalizada = normalizador.transform(nova_instancia)
@@ -47,7 +48,7 @@ df_centroide = pd.DataFrame(centroide, columns=['Nitrogen', 'Phosphorus', 'Potas
 centroide_legivel = normalizador.inverse_transform(df_centroide)
 
 # Transformar o centróide legível em um DataFrame
-df_centroide_legivel = pd.DataFrame(data=centroide_legivel, columns=['Nitrogen', 'Phosphorus', 'Potassium', 'Temperature', 'Humidity', 'pH_Value', 'Rainfall'])
+df_centroide_legivel = pd.DataFrame(data=centroide_legivel, columns=['Nitrogen', 'Phosphorus', 'Potassium', 'Temperature', 'Humidity', 'pH_Value', 'Rainfall']).round(4)
 
 # Exibir o DataFrame do centróide legível
 print("\nDados do centróide (legiveis):")
