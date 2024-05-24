@@ -7,43 +7,48 @@ crop_kmeans_model = load(open("clusterizador/crop_cluster.pkl", "rb"))
 normalizador = load(open("clusterizador/normalizador.pkl", "rb"))
 
 # Listas de teste
-test_instances = [
-    [90, 42, 43, 20.87974371, 82.00274423, 6.502985292, 202.9355362],
-    [19, 51, 25, 26.80474415, 48.23991436, 3.5253661, 43.87801983],
-    [39, 58, 85, 17.88776475, 15.40589717, 5.996932037, 68.54932919],
-    [40, 64, 16, 16.43340342, 24.24045875, 5.926676985, 140.3717815],
-    [33, 73, 23, 29.23540524, 59.38967583, 5.985792703, 103.3301803],
-    [111, 79, 53, 28.31193338, 75.77363772, 6.165001278, 119.695765],
-    [112, 25, 51, 25.04746944, 85.5667282, 6.932537231, 56.72496677]
-]
-
-# Criar DataFrame das novas instâncias
-df_teste = pd.DataFrame(test_instances, columns=['Nitrogen', 'Phosphorus', 'Potassium', 'Temperature', 'Humidity', 'pH_Value', 'Rainfall'])
+nova_instancia = [[90, 42, 43, 20.87974371, 82.00274423, 6.502985292, 202.9355362]]
 
 # Normalizar as novas instâncias usando o mesmo normalizador
-dados_numericos_normalizados = normalizador.transform(df_teste)
+nova_instancia_normalizada = normalizador.transform(nova_instancia)
 
 # Prever os grupos das novas instâncias
-grupos_preditos = crop_kmeans_model.predict(dados_numericos_normalizados)
+grupo_predito = crop_kmeans_model.predict(nova_instancia_normalizada)
 
 # Mostrar resultados
-print(grupos_preditos)
-for i, grupo_predito in enumerate(grupos_preditos):
-    print(i)
-    print(grupo_predito)
-    centroide = crop_kmeans_model.cluster_centers_[grupo_predito]
-    print(f"Índice do grupo da nova instância {i+1}: {grupo_predito}")
-    print(f"Centroide da nova instância {i+1}: {centroide}")
+centroide = crop_kmeans_model.cluster_centers_[grupo_predito]
+print(f"Índice do grupo da nova instância: {grupo_predito}")
+print(f"Centroide da nova instância: {centroide}")
+
 
 # Desnormalizar as novas instâncias para legibilidade, se necessário
-dados_normalizados_final_legiveis = normalizador.inverse_transform(dados_numericos_normalizados)
+dados_normalizados_final_legiveis = normalizador.inverse_transform(nova_instancia_normalizada)
 dados_normalizados_final_legiveis_df = pd.DataFrame(data=dados_normalizados_final_legiveis, columns=['Nitrogen', 'Phosphorus', 'Potassium', 'Temperature', 'Humidity', 'pH_Value', 'Rainfall'])
 
 # Exibir o DataFrame final com os dados legíveis
-print("Dados das novas instâncias (desnormalizados):")
+print("\nDados das novas instâncias (desnormalizados):")
 print(dados_normalizados_final_legiveis_df.to_string(index=False))
 
-df_dados_normalizados = pd.DataFrame(data=dados_numericos_normalizados, columns=['Nitrogen', 'Phosphorus', 'Potassium', 'Temperature', 'Humidity', 'pH_Value', 'Rainfall'])
+df_dados_normalizados = pd.DataFrame(data=nova_instancia_normalizada, columns=['Nitrogen', 'Phosphorus', 'Potassium', 'Temperature', 'Humidity', 'pH_Value', 'Rainfall'])
 
-print("Dados normalizados das novas instâncias:")
+print("\nDados normalizados das novas instâncias:")
 print(df_dados_normalizados.to_string(index=False))
+
+# Obter o centróide
+centroide = crop_kmeans_model.cluster_centers_[grupo_predito]
+
+# Remover a dimensão extra
+centroide = centroide.reshape(-1, 7)
+
+# Transformar o centróide em um DataFrame
+df_centroide = pd.DataFrame(centroide, columns=['Nitrogen', 'Phosphorus', 'Potassium', 'Temperature', 'Humidity', 'pH_Value', 'Rainfall'])
+
+# Desnormalizar o centróide para legibilidade
+centroide_legivel = normalizador.inverse_transform(df_centroide)
+
+# Transformar o centróide legível em um DataFrame
+df_centroide_legivel = pd.DataFrame(data=centroide_legivel, columns=['Nitrogen', 'Phosphorus', 'Potassium', 'Temperature', 'Humidity', 'pH_Value', 'Rainfall'])
+
+# Exibir o DataFrame do centróide legível
+print("\nDados do centróide (legiveis):")
+print(df_centroide_legivel.to_string(index=False))
