@@ -11,7 +11,7 @@ warnings.filterwarnings("ignore")
 
 # Abrir os dados
 import pandas as pd
-dados = pd.read_csv('C:/Users/yann_/OneDrive/Documentos/GitHub/AV1bim-Sistemas_Inteligentes/Crop_Recommendation.csv', sep=',')
+dados = pd.read_csv('./Crop_Recommendation.csv', sep=',')
 
 # Segmentar os dados em atributos e classes
 dados_atributos = dados.drop(columns=['Crop'])
@@ -29,7 +29,7 @@ normalizador = MinMaxScaler()
 crop_normalizador = normalizador.fit(dados_atributos) # o método fit()gera o modelo para normalização
 ## Salvar o modelo normalizador para uso posterior
 from pickle import dump
-dump(crop_normalizador, open('C:/Users/yann_/OneDrive/Documentos/GitHub/AV1bim-Sistemas_Inteligentes/classificador/crop_normalizador.pwl', 'wb'))
+dump(crop_normalizador, open('classificador/crop_normalizador.pwl', 'wb'))
 
 ####################################################################################################################################
 # 1.3 - Normalizar a base de dados para treinamento
@@ -71,6 +71,51 @@ dados_classes_b = pd.DataFrame(dados_classes_b)
 print(dados_atributos_b)
 
 ####################################################################################################################################
+# grid search
+import numpy as np
+from sklearn.tree import DecisionTreeClassifier
+tree = DecisionTreeClassifier()
+
+# Montagem da grade de parâmentros
+# Número de árvores na floresta
+n_estimators = [int(x) for x in np.linspace(start = 100, stop = 300, num = 3)]
+# Número de atributos considerados em cada segmento
+max_features = ['sqrt', 'log2']
+# Número máximo de folhas em cada árvore
+max_depth = [int(x) for x in np.linspace(10,110, num = 3)]
+max_depth.append(None)
+# Número mínimo de instâncias requeridas para segmentar cada nó
+min_samples_split = [2,5,10]
+# Número mínimo de amostras necessárias em cada nó
+min_samples_leaf = [1,2,4]
+# Método de seleção de amostras para treinar cada árvore
+# bootstrap = [True, False]
+from sklearn.model_selection import GridSearchCV
+random_grid = {'max_features' : max_features,
+               'max_depth' : max_depth,
+               'min_samples_split' : min_samples_split,
+               'min_samples_leaf' : min_samples_leaf,}
+
+# Alternative
+# random_grid = {'n_estimators' : n_estimators,
+#                'max_features' : max_features,
+#                'max_depth' : max_depth}
+
+from pprint import pprint
+pprint(random_grid)
+
+# INICIAR A BUSCA PELO MELHORES HIPERPARAMETROS
+
+# rf = instanciação da randomForest
+rf_grid = GridSearchCV(tree,random_grid,refit=True,verbose=2)
+rf_grid.fit(dados_atributos_b, dados_classes_b)
+
+print("##### MELHORES HIPERPARÂMETROS #####")
+print(type(rf_grid))
+print(rf_grid.best_params_)
+# Obter os melhores parâmetros
+best_params = rf_grid.best_params_
+####################################################################################################################################
 # 3. Treinar
 
 # 3.1 - Segmentar os dados em conjunto para treinamento e conjunto para testes (Test HoldOut)
@@ -81,7 +126,7 @@ atributos_train, atributos_test, classes_train, classes_test = train_test_split(
 # Será usada uma árvore, mas que pode ser substituida por outro indutor
 from sklearn.tree import DecisionTreeClassifier
 
-tree = DecisionTreeClassifier()
+tree = DecisionTreeClassifier(**best_params)
 
 # TREINAMENTO E TESTES COM HOLD OUT (70% treino e 30% testes)
 crop_tree = tree.fit(atributos_train, classes_train) # Este treinamento não faz sentido quando usamos CrossValidation
@@ -112,7 +157,7 @@ print(score_cross_val.mean(), ' - ', score_cross_val.std())
 crop_tree = tree.fit(dados_atributos_b, dados_classes_b)
 
 # Salvar o modelo para uso posterior
-dump(crop_tree, open('C:/Users/yann_/OneDrive/Documentos/GitHub/AV1bim-Sistemas_Inteligentes/classificador/crop_tree_model_cross.pwl', 'wb'))
+dump(crop_tree, open('classificador/crop_tree_model_cross.pwl', 'wb'))
 
 ####################################################################################################################################
 # Acurácia global do modelo
@@ -138,4 +183,4 @@ ConfusionMatrixDisplay.from_estimator(crop_tree_cross, dados_atributos_b, dados_
 plt.xticks(rotation=90, ha='right')
 plt.show()
 
-dump(crop_tree_cross, open('C:/Users/yann_/OneDrive/Documentos/GitHub/AV1bim-Sistemas_Inteligentes/classificador/crop_tree_cross.pkl', 'wb'))
+dump(crop_tree_cross, open('classificador/crop_tree_cross.pkl', 'wb'))
